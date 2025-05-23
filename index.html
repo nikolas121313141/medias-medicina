@@ -3,67 +3,68 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Calculadora de Médias</title>
+  <title>Calculadora do Mete Fofo</title>
   <style>
     body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f2f2f2; }
     h1 { text-align: center; margin-bottom: 20px; }
-    select, input, button { width: 100%; padding: 10px; margin-bottom: 10px; font-size: 16px; }
-    button { background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+    label, select, input, button { width: 100%; display: block; margin-bottom: 10px; font-size: 16px; }
+    input, select { padding: 8px; }
+    button { background-color: #4CAF50; color: white; border: none; padding: 12px; cursor: pointer; }
     button:hover { background-color: #45a049; }
-    #resultado { background: white; padding: 15px; margin-top: 20px; border-radius: 5px; }
+    #resultado { background: white; padding: 15px; margin-top: 20px; border-radius: 5px; font-weight: bold; }
   </style>
 </head>
 <body>
-  <h1>Calculadora de Médias - Medicina</h1>
+  <h1>Calculadora do Mete Fofo</h1>
+
   <label for="materia">Selecione a matéria:</label>
   <select id="materia">
-    <option value="ginecologia">Ginecologia</option>
+    <option value="ginecologia">Ginecologia e Obstetrícia</option>
     <option value="pediatria">Pediatria</option>
     <option value="scaps">SCAPS</option>
-    <option value="mediaFinal">Média Final Geral</option>
   </select>
 
-  <div id="inputs"></div>
-  <button onclick="calcular()">Calcular</button>
+  <div id="inputsAV1"></div>
+
+  <div id="inputsAV2" style="display:none;">
+    <label for="av2">Nota AV2:</label>
+    <input type="number" id="av2" min="0" max="10" step="0.01" />
+  </div>
+
+  <button onclick="calcular()">Calcular Média Final</button>
 
   <div id="resultado"></div>
 
   <script>
-    const inputsDiv = document.getElementById('inputs');
     const materiaSelect = document.getElementById('materia');
+    const inputsAV1Div = document.getElementById('inputsAV1');
+    const inputsAV2Div = document.getElementById('inputsAV2');
     const resultadoDiv = document.getElementById('resultado');
 
     const materias = {
       ginecologia: [
-        {label: 'Prova Teórica (P1)', id: 'p1', peso: 0.6},
-        {label: 'Oral', id: 'oral', peso: 0.2},
-        {label: 'Conceito', id: 'conceito', peso: 0.2},
+        { label: 'Prova Teórica (P1)', id: 'p1', peso: 0.6 },
+        { label: 'Oral', id: 'oral', peso: 0.2 },
+        { label: 'Conceito', id: 'conceito', peso: 0.2 },
       ],
       pediatria: [
-        {label: 'Conceito (prática)', id: 'conceito', peso: 0.1},
-        {label: 'Forms (pós-teste)', id: 'forms', peso: 0.1},
-        {label: 'P1 (teórica)', id: 'p1', peso: 0.3},
-        {label: 'Prova oral/prática', id: 'oral', peso: 0.2},
-        {label: 'P2 (teórica)', id: 'p2', peso: 0.3},
+        { label: 'Conceito (prática)', id: 'conceito', peso: 0.1 },
+        { label: 'Forms (pós-teste)', id: 'forms', peso: 0.1 },
+        { label: 'P1 (teórica)', id: 'p1', peso: 0.3 },
+        { label: 'Prova oral/prática', id: 'oral', peso: 0.2 },
+        { label: 'P2 (teórica)', id: 'p2', peso: 0.3 },
       ],
       scaps: [
-        {label: 'Prova 1 (teórica)', id: 'p1', peso: 3.5},
-        {label: 'Prova 2 (teórica)', id: 'p2', peso: 3.5},
-        {label: 'Trabalho individual', id: 'trabInd', peso: 1.0},
-        {label: 'Trabalho em grupo', id: 'trabGrp', peso: 2.0},
+        { label: 'Prova 1 (teórica)', id: 'p1', peso: 3.5 },
+        { label: 'Prova 2 (teórica)', id: 'p2', peso: 3.5 },
+        { label: 'Trabalho individual', id: 'trabInd', peso: 1.0 },
+        { label: 'Trabalho em grupo', id: 'trabGrp', peso: 2.0 },
       ],
     };
 
-    function criarInputs(materia) {
-      inputsDiv.innerHTML = '';
-      if(materia === 'mediaFinal') {
-        inputsDiv.innerHTML = `
-          <label>Nota AV1:</label><input type="number" id="av1" min="0" max="10" step="0.01"/>
-          <label>Nota AV2:</label><input type="number" id="av2" min="0" max="10" step="0.01"/>
-        `;
-        return;
-      }
-      materias[materia].forEach(({label, id}) => {
+    function criarInputsAV1(materia) {
+      inputsAV1Div.innerHTML = '';
+      materias[materia].forEach(({ label, id }) => {
         const labelEl = document.createElement('label');
         labelEl.textContent = label;
         const inputEl = document.createElement('input');
@@ -72,66 +73,85 @@
         inputEl.min = 0;
         inputEl.max = 10;
         inputEl.step = 0.01;
-        inputsDiv.appendChild(labelEl);
-        inputsDiv.appendChild(inputEl);
+        inputsAV1Div.appendChild(labelEl);
+        inputsAV1Div.appendChild(inputEl);
       });
     }
 
+    function toggleAV2(show) {
+      inputsAV2Div.style.display = show ? 'block' : 'none';
+    }
+
     materiaSelect.addEventListener('change', () => {
-      criarInputs(materiaSelect.value);
+      criarInputsAV1(materiaSelect.value);
       resultadoDiv.textContent = '';
+      // AV2 aparece para ginecologia e pediatria, não para SCAPS
+      if (materiaSelect.value === 'scaps') {
+        toggleAV2(true);
+      } else {
+        toggleAV2(true);
+      }
     });
 
-    criarInputs(materiaSelect.value);
+    criarInputsAV1(materiaSelect.value);
+    toggleAV2(true);
 
     function calcular() {
       const materia = materiaSelect.value;
-      let media = 0;
-
-      if(materia === 'mediaFinal') {
-        const av1 = parseFloat(document.getElementById('av1').value);
-        const av2 = parseFloat(document.getElementById('av2').value);
-        if(isNaN(av1) || isNaN(av2)) {
-          resultadoDiv.textContent = 'Preencha todas as notas!';
-          return;
-        }
-        media = ((av1*2) + av2) / 3;
-        resultadoDiv.textContent = `Média final = ${media.toFixed(2)}`;
-        return;
-      }
-
+      let av1 = 0;
       let somaPesos = 0;
-      let somaNotas = 0;
 
-      if(materia === 'scaps') {
-        // pesos diferentes e somados para ponderar depois
+      if (materia === 'scaps') {
         const p1 = parseFloat(document.getElementById('p1').value);
         const p2 = parseFloat(document.getElementById('p2').value);
         const trabInd = parseFloat(document.getElementById('trabInd').value);
         const trabGrp = parseFloat(document.getElementById('trabGrp').value);
-        if([p1,p2,trabInd,trabGrp].some(isNaN)) {
+        const av2 = parseFloat(document.getElementById('av2').value);
+
+        if ([p1, p2, trabInd, trabGrp, av2].some(n => isNaN(n))) {
           resultadoDiv.textContent = 'Preencha todas as notas!';
           return;
         }
-        somaNotas = p1*3.5 + p2*3.5 + trabInd*1 + trabGrp*2;
-        somaPesos = 3.5 + 3.5 + 1 + 2;
-        media = somaNotas / somaPesos;
-      } else {
-        materias[materia].forEach(({id, peso}) => {
-          const nota = parseFloat(document.getElementById(id).value);
-          if(isNaN(nota)) {
-            resultadoDiv.textContent = 'Preencha todas as notas!';
-            media = null;
-            return;
-          }
-          somaNotas += nota * peso;
-          somaPesos += peso;
-        });
-        if(media !== null) media = somaNotas / somaPesos;
+
+        // AV1 e AV2 calculados com mesma fórmula
+        const av1Notas = p1 * 3.5 + p2 * 3.5 + trabInd * 1 + trabGrp * 2;
+        const av2Notas = av2; // AV2 já entrada única (pode adaptar se quiser inputs mais detalhados)
+
+        av1 = av1Notas / 10; // peso total = 3.5+3.5+1+2=10
+
+        // Nota final = (AV1 × 0,666) + (AV2 × 0,333)
+        const mediaFinal = av1 * 0.666 + av2 * 0.333;
+        resultadoDiv.textContent = `AV1 = ${av1.toFixed(2)} | Nota Final = ${mediaFinal.toFixed(2)}`;
+        return;
       }
 
-      if(media !== null)
-        resultadoDiv.textContent = `Média de ${materia} = ${media.toFixed(2)}`;
+      // Para ginecologia e pediatria: calcular AV1 primeiro
+      materias[materia].forEach(({ id, peso }) => {
+        const nota = parseFloat(document.getElementById(id).value);
+        if (isNaN(nota)) {
+          resultadoDiv.textContent = 'Preencha todas as notas!';
+          av1 = null;
+          return;
+        }
+        av1 += nota * peso;
+        somaPesos += peso;
+      });
+
+      if (av1 === null) return;
+
+      av1 /= somaPesos;
+
+      const av2 = parseFloat(document.getElementById('av2').value);
+      if (isNaN(av2)) {
+        resultadoDiv.textContent = 'Preencha a nota AV2!';
+        return;
+      }
+
+      // Média final (igual para ginecologia e pediatria):
+      // Média final = ((AV1 × 2) + AV2) ÷ 3
+      const mediaFinal = ((av1 * 2) + av2) / 3;
+
+      resultadoDiv.textContent = `AV1 = ${av1.toFixed(2)} | Média Final = ${mediaFinal.toFixed(2)}`;
     }
   </script>
 </body>
